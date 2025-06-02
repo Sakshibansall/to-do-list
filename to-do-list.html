@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To do list</title>
+
+  <style>
+
+    body {
+      font-family: Arial, Helvetica;
+    }
+
+    .whole-list{
+      display: grid;
+      grid-template-columns: 194px 180px 50px;
+      column-gap: 10px;
+    }
+    input {
+      padding: 5px;
+    }
+
+    .add {
+      background-color: rgb(240, 236, 42);
+      border: 1px solid black;
+      padding: 6px 6px;
+    }
+
+    .delete-btn {
+      background-color: red;
+      border: 1px solid black;
+      padding: 4px 6px;
+    }
+
+    
+    .adding{
+      display: grid;
+      row-gap: 20px;
+      list-style: none;
+      padding: 0;
+      align-items: stretch;
+      
+    }
+
+    .lists{
+    display: flex;
+    align-items: center;
+   
+    }
+    .lists div{
+      display: grid;
+      grid-template-columns: 120px 47px;
+     padding:0px 15px;
+    overflow-y: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>To Do list</h1>
+  <div class="whole-list">
+  <input type="text" placeholder="Add Task" id="todo">
+  <input type="date" id="dateElement">
+  <button onclick="addTodo()" class="add">Add</button>
+</div>
+  <ul class="adding"></ul>
+ 
+  <script>
+ 
+    let todoArray = [];
+
+    window.onload =function () {
+      const savedTask = localStorage.getItem("todos");
+      if (savedTask) {
+        todoArray = JSON.parse(savedTask)
+        todoArray.forEach(task =>
+          displayTask(task.name, task.date)
+        );
+      }
+    }
+    function addTodo() {
+
+      let inputelemnt = document.querySelector("#todo");
+      let dateElement = document.querySelector("#dateElement")
+
+      if (inputelemnt.value === "" || dateElement.value === "") {
+        alert("Please enter task and date");
+      }
+      else {
+        let name = inputelemnt.value;
+        let date = dateElement.value
+
+        const task = { name, date }
+
+        todoArray.push(task);
+
+        //save to localstorage
+        localStorage.setItem("todos", JSON.stringify(todoArray))
+
+        displayTask(name, date);
+
+        inputelemnt.value = ""
+        dateElement.value = ""
+      }
+    }
+
+    function displayTask(name, date) {
+      let ul = document.querySelector(".adding");
+
+      let li = document.createElement("li");
+      li.classList.add("lists");
+
+      li.innerHTML = `<div>${name}</div><div> ${date}</div>
+      `;
+
+    
+      let dltbtn = document.createElement("button");
+      dltbtn.classList.add("delete-btn")
+      dltbtn.textContent = "delete";
+
+      dltbtn.onclick = function () {
+        ul.removeChild(li)
+        console.log(todoArray);
+
+        //removing from array
+        todoArray = todoArray.filter(task => !(task.name === name && task.date === date))
+
+
+        //update localstorage
+        localStorage.setItem("todos", JSON.stringify(todoArray))
+      }
+
+      li.appendChild(dltbtn)
+      ul.appendChild(li);
+    }
+  </script>
+</body>
+
+</html>
